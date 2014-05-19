@@ -174,7 +174,6 @@ class Codelight_WP_Cleanup {
      */
     public function unregister_blog_widgets() {
         unregister_widget('WP_Widget_Archives');
-        unregister_widget('WP_Widget_Search');
         unregister_widget('WP_Widget_Categories');
         unregister_widget('WP_Widget_Recent_Posts');
         unregister_widget('WP_Widget_RSS');
