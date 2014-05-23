@@ -1,0 +1,23 @@
+{
+  "name": "codelight-eu/wp-cleanup",
+  "description": "Remove various unneeded functionality from your WP installation.",
+  "keywords": ["wordpress", "plugin"],
+  "homepage": "http://codelight.eu",
+  "license": "The Unlicense",
+  "authors": [
+    {
+      "name": "Indrek Konnussaar",
+      "email": "indrek@codelight.eu",
+      "homepage": "http://codelight.eu"
+    },
+    {
+      "name": "Mats-Joonas Kulla",
+      "email": "mj@codelight.eu",
+      "homepage": "http://codelight.eu"
+    },
+  ],
+  "type": "wordpress-plugin",
+  "require": {
+    "composer/installers": "v1.0.6"
+  }
+}
