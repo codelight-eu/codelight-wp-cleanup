@@ -122,6 +122,7 @@ class Codelight_WP_Cleanup {
         remove_submenu_page('themes.php', 'customize.php');
         remove_submenu_page('themes.php', 'custom-header');
         remove_submenu_page('themes.php', 'custom-background');
+        remove_submenu_page('themes.php', 'theme_activation_options');
     }
 
     /*

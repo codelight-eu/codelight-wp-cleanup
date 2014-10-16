@@ -4,7 +4,7 @@
  Plugin URI: http://codelight.eu
  Description: Remove various unneeded functionality from your WP installation.
  Author: Codelight.eu
- Version: 1.0
+ Version: 1.1
  Author URI: http://codelight.eu
  */
 
