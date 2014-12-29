@@ -204,6 +204,16 @@ class Codelight_WP_Cleanup {
 
 
     /*
+     * Restrict tinymce formats to p, h2, h3, h4.
+     *
+     * Disable: add_theme_support('cl-disable-tinymce-cleanup')
+     */
+    public function tinymce_cleanup($formats) {
+        $formats['block_formats'] = 'Paragraph=p;Heading h2=h2;Heading h3=h3;Heading h4=h4';
+        return $formats;
+    }
+
+    /*
      * Force IE to use the Edge engine for rendering
      *
      * Since the X-UA-COMPATIBLE meta tag is not valid W3C HTML5,

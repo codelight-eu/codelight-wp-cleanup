@@ -21,6 +21,7 @@ You can also enable the following:
 * Disable the search functionality.
 
 And by default, the plugin:
+* Restricts TinyMCE styles dropdown to &lt;p&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;;
 * Disables XML-RPC;
 * Hides update notifications for non-admin users;
 * Removes Quick Press dashboard widget;
@@ -99,7 +100,6 @@ add_theme_support('cl-remove-comments');
 ```
 
 
-
 ### Admin cleanup
 For all non-admin users, this feature:
 * Hides update notifications
@@ -134,6 +134,16 @@ To re-enable Tools:
 ```
 add_theme_support('cl-enable-tools');
 ```
+
+### Clean up TinyMCE
+
+Restrict the TinyMCE styles dropdown to only have &lt;p&gt;, &lt;h2&gt;, &lt;h3&gt; and &lt;h4&gt;.
+
+To disable:
+```
+add_theme_support('cl-disable-tinymce-cleanup');
+```
+
 
 ### XML-RPC
 Disabled by default, as it's a [potential attack vector](http://blog.spiderlabs.com/2014/03/wordpress-xml-rpc-pingback-vulnerability-analysis.html). To enable:

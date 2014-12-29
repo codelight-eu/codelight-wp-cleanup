@@ -58,6 +58,11 @@ function codelight_wp_cleanup_init() {
         $cleanup->remove_search();
     }
 
+    // Clean up less useful stuff from tinymce editor
+    if ( !current_theme_supports('cl-disable-tinymce-cleanup') ) {
+        add_filter('tiny_mce_before_init', array($cleanup, 'tinymce_cleanup'));
+    }
+
     // Clean up un-used widgets; misc ~useless widgets are removed by default
     add_action('widgets_init', function() use ($cleanup) {
          $cleanup->remove_widgets( apply_filters('cl_remove_widgets', array('misc')) );
