@@ -14,7 +14,7 @@
       "name": "Mats-Joonas Kulla",
       "email": "mj@codelight.eu",
       "homepage": "http://codelight.eu"
-    },
+    }
   ],
   "type": "wordpress-plugin",
   "require": {
