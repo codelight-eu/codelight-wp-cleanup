@@ -18,6 +18,6 @@
   ],
   "type": "wordpress-plugin",
   "require": {
-    "composer/installers": "v1.0.6"
+    "composer/installers": "v1.0.7"
   }
 }
