@@ -16,8 +16,5 @@
       "homepage": "http://codelight.eu"
     }
   ],
-  "type": "wordpress-plugin",
-  "require": {
-    "composer/installers": "v1.0.7"
-  }
+  "type": "wordpress-plugin"
 }
