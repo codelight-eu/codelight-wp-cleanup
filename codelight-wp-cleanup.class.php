@@ -14,6 +14,25 @@ class Codelight_WP_Cleanup {
         add_filter('xmlrpc_enabled', '__return_false');
     }
 
+    /*
+     * This disables update CHECKS, http request for plugin, core and theme
+     * updates. Currently WP still makes a lone request against plugin api,
+     * not sure. This speeds up first load of plugins and other wp-admin pages.
+     * 
+     * Enable: add_theme_support('disable_plugin_update_check');
+     */
+    public function disable_plugin_update_check() {
+        add_filter('pre_site_transient_update_core', array($this, 'remove_core_updates'));
+        add_filter('pre_site_transient_update_plugins', array($this, 'remove_core_updates'));
+        add_filter('pre_site_transient_update_themes', array($this, 'remove_core_updates'));
+    }
+    public function remove_core_updates(){
+        global $wp_version;
+        return (object) array(
+            'last_checked' => time(),
+            'version_checked' => $wp_version,
+        );
+    }
 
     /*
      * For users who don't have edit_posts capability:

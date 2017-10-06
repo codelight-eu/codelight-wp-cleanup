@@ -4,7 +4,7 @@
  Plugin URI: http://codelight.eu
  Description: Remove various unneeded functionality from your WP installation.
  Author: Codelight.eu
- Version: 1.1
+ Version: 1.2
  Author URI: http://codelight.eu
  */
 
@@ -21,6 +21,11 @@ function codelight_wp_cleanup_init() {
 
     require_once('codelight-wp-cleanup.class.php');
     $cleanup = new Codelight_WP_Cleanup();
+
+    // Disable update checks for plugins, core and themes
+    if ( current_theme_supports('cl-disable-plugin-update-check')) {
+        $cleanup->disable_plugin_update_check();  
+    }
     
     // By default, turn off XML-RPC
     if ( !current_theme_supports('cl-enable-xmlrpc') ) {
