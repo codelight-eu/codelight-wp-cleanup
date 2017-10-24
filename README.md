@@ -51,7 +51,6 @@ Even if date / author / attachment archive templates do not exist, Wordpress wil
 To disable specific archives:
 
 ```
-// Assuming PHP 5.3.0
 add_filter('cl_remove_archives', function($types) {
     return array('author', 'date', 'attachment');
 });
@@ -71,7 +70,7 @@ By default, nothing is removed.
 Remove all search-related functionality.
 
 ```
-add_theme_support('cl-remove-search')
+add_theme_support('cl-remove-search');
 ```
 
 ### Disable widgets
