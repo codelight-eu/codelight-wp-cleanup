@@ -44,6 +44,11 @@ add_theme_support('cl-wp-cleanup');
 ```
 Without this, the plugin does nothing.
 
+### Disable customizer
+```
+add_theme_support('cl-disable-customizer');
+```
+
 ### Disable categories / tags / archives
 
 Even if date / author / attachment archive templates do not exist, Wordpress will still render those pages using the default template, which can result in those pages being visually broken. These broken or simply unused pages may be indexed by search engines.
