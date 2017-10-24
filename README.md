@@ -83,6 +83,7 @@ add_filter('cl_remove_widgets', function($widgets) {
 ```
 
 Valid arguments are:
+* 'all' to completely remove the Widgets page from WP Admin;
 * 'misc' to remove Pages, Calendar, Links, Meta, Tag Cloud widgets;
 * 'blog' to remove blog-related widgets: Archives, Categories, Recent Posts, RSS;
 * or an array of specific widget class names - the full list is available in the [Codex](http://codex.wordpress.org/Function_Reference/unregister_widget)
