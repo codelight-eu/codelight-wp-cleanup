@@ -5,21 +5,46 @@
  */
 class Codelight_WP_Cleanup {
 
+    /**
+     * Get rid of the Customizer.
+     * Thanks to https://wordpress.org/plugins/customizer-remove-all-parts/
+     */
+    public function disable_customizer() {
+        add_action('admin_init', function() {
+            remove_action( 'plugins_loaded', '_wp_customize_include', 10);
+            remove_action( 'admin_enqueue_scripts', '_wp_customize_loader_settings', 11);
+            add_action( 'load-customize.php', function() {
+                wp_die(__('The customizer is disabled.', 'codelight'));
+            });
+        });
+
+        add_action('init', function() {
+            add_filter('map_meta_cap', function($caps = array(), $cap = '', $user_id = 0, $args = array()) {
+                if ($cap == 'customize') {
+                    return array('nope');
+                }
+                return $caps;
+            }, 10, 4 );
+        });
+    }
+
     /*
      * XML-RPC is rarely used anyway, so it's turned off by default.
      *
      * Enable XML-RPC: add_theme_support('cl-xmlrpc');
      */
     public function disable_xmlrpc() {
-        add_filter('xmlrpc_enabled', '__return_false');
+        add_filter('xmlrpc_enabled', function() {
+            return false;
+        });
     }
 
     /*
      * This disables update CHECKS, http request for plugin, core and theme
      * updates. Currently WP still makes a lone request against plugin api,
      * not sure. This speeds up first load of plugins and other wp-admin pages.
-     * 
-     * Enable: add_theme_support('disable_plugin_update_check');
+     *
+     * Enable: add_theme_support('cl-disable-plugin-update-check');
      */
     public function disable_plugin_update_check() {
         add_filter('pre_site_transient_update_core', array($this, 'remove_core_updates'));
@@ -73,7 +98,7 @@ class Codelight_WP_Cleanup {
     }
 
     public function remove_menu_tools_page() {
-        
+
         remove_menu_page('tools.php');
     }
 
@@ -111,7 +136,7 @@ class Codelight_WP_Cleanup {
 
     /*
      * By default, for non-admin users:
-     * 
+     *
      * - Hide Appearance > [Themes, Customize, Header, Background]
      * - Remove useless dashboard widgets
      * - Hide update notifications
@@ -125,7 +150,7 @@ class Codelight_WP_Cleanup {
         }
 
         $this->hide_update_notifications();
-        
+
         add_action( 'admin_menu', array($this, 'remove_menu_pages') );
         add_action( 'wp_dashboard_setup', array($this, 'remove_dashboard_widgets') );
 
@@ -158,7 +183,7 @@ class Codelight_WP_Cleanup {
 
     /*
      * Bulk unregister widgets.
-     * 
+     *
      * Special args: 'blog', 'misc'
      *
      * Modify: add_filter('cl_remove_widgets', array $args)
@@ -178,11 +203,10 @@ class Codelight_WP_Cleanup {
             }
 
             unregister_widget($widget);
-
         }
 
         if ( current_theme_supports('cl-remove-comments') ) {
-            unregister_widget('WP_Widget_Recent_Comments'); 
+            unregister_widget('WP_Widget_Recent_Comments');
         }
 
     }
@@ -237,9 +261,9 @@ class Codelight_WP_Cleanup {
      *
      * Since the X-UA-COMPATIBLE meta tag is not valid W3C HTML5,
      * it can be sent with headers instead as a workaround.
-     * 
+     *
      * add_filter('wp_headers', array($this, 'add_x_ua_compatible_header'));
-     */ 
+     */
     public function add_x_ua_compatible_header($headers) {
         $headers['X-UA-Compatible'] = 'IE=edge,chrome=1';
         return $headers;
@@ -253,7 +277,9 @@ class Codelight_WP_Cleanup {
      */
     public function limit_post_revisions($number = 5) {
         if (!defined('WP_POST_REVISIONS')) {
-            define('WP_POST_REVISIONS', $number);
+            add_filter('wp_revisions_to_keep', function() use ($number) {
+                return $number;
+            });
         }
     }
 
@@ -318,7 +344,7 @@ class Codelight_WP_Cleanup {
      * Disable specified Archive pages
      *
      * This is useful for removing access to pages that exist by default
-     * thanks to a generic index.php or archive.php template, 
+     * thanks to a generic index.php or archive.php template,
      * and can look visually broken if they're not styled separately.
      *
      * Valid types are: 'category', 'tag', 'author', 'date', 'attachment' (which is technically not an archive)
@@ -409,7 +435,7 @@ class Codelight_WP_Cleanup {
                 exit;
             } elseif ( is_attachment() ) {
                 wp_redirect(get_bloginfo('wpurl'), 302);
-                exit;   
+                exit;
             }
         }
     }

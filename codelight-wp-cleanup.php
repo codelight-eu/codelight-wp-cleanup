@@ -22,14 +22,21 @@ function codelight_wp_cleanup_init() {
     require_once('codelight-wp-cleanup.class.php');
     $cleanup = new Codelight_WP_Cleanup();
 
+    // Disable customizer
+    if ( current_theme_supports('cl-disable-customizer')) {
+        $cleanup->disable_customizer();
+    }
+
     // Disable update checks for plugins, core and themes
     if ( current_theme_supports('cl-disable-plugin-update-check')) {
-        $cleanup->disable_plugin_update_check();  
+        $cleanup->disable_plugin_update_check();
     }
-    
+
     // By default, turn off XML-RPC
     if ( !current_theme_supports('cl-enable-xmlrpc') ) {
-        add_filter('xmlrpc_enabled', '__return_false');
+        add_filter('xmlrpc_enabled', function() {
+            return false;
+        });
     }
 
     // Disable admin bar and dashboard access to users without 'edit_posts' capability
@@ -68,20 +75,23 @@ function codelight_wp_cleanup_init() {
         add_filter('tiny_mce_before_init', array($cleanup, 'tinymce_cleanup'));
     }
 
-    // Clean up un-used widgets; misc ~useless widgets are removed by default
-    add_action('widgets_init', function() use ($cleanup) {
-         $cleanup->remove_widgets( apply_filters('cl_remove_widgets', array('misc')) );
-    });
+    if (in_array('all', apply_filters('cl_remove_widgets', array('misc')))) {
+        // Disable all widgets
+        remove_action( '_admin_menu', 'wp_widgets_add_menu' );
+    } else {
+        // Clean up un-used widgets; misc ~useless widgets are removed by default
+        add_action('widgets_init', function() use ($cleanup) {
+            $cleanup->remove_widgets( apply_filters('cl_remove_widgets', array('misc')) );
+        });
+    }
 
     // Disable specific archive page types
     $cleanup->remove_archive_pages( apply_filters('cl_remove_archives', array()) );
 
     // By default, add X-UA-Compatible header
     add_filter('wp_headers', array($cleanup, 'add_x_ua_compatible_header'));
-    
+
     // By default, if not specifically set to another number, limit post revisions to 5
     $cleanup->limit_post_revisions();
-
 }
-
-add_action('after_setup_theme', 'codelight_wp_cleanup_init');
+add_action('after_setup_theme', 'codelight_wp_cleanup_init', 1000);
