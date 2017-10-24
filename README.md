@@ -8,10 +8,11 @@ This plugin provides an easy way to selectively disable most of the stuff I've f
 Note that this plugin has *not* been tested thoroughly - patches and issues are welcome.
 
 Todo:
-* Allow moving Menus to a separate top-level menu item (i.e. instead of Appearance)
-* Allow bulk registering options (instead of a ton of separate add_theme_support() calls)
-* Refactor architecture
-* Refactor to use PSR-2
+* Review and fix removing Comments;
+* Allow moving Menus to a separate top-level menu item (i.e. instead of Appearance);
+* Allow bulk registering options (instead of a ton of separate add_theme_support() calls);
+* Refactor architecture;
+* Refactor to use PSR-2.
 
 Summary
 ==========
