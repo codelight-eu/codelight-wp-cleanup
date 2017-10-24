@@ -44,6 +44,11 @@ add_theme_support('cl-wp-cleanup');
 ```
 Without this, the plugin does nothing.
 
+### Disable customizer
+```
+add_theme_support('cl-disable-customizer');
+```
+
 ### Disable categories / tags / archives
 
 Even if date / author / attachment archive templates do not exist, Wordpress will still render those pages using the default template, which can result in those pages being visually broken. These broken or simply unused pages may be indexed by search engines.
@@ -51,7 +56,6 @@ Even if date / author / attachment archive templates do not exist, Wordpress wil
 To disable specific archives:
 
 ```
-// Assuming PHP 5.3.0
 add_filter('cl_remove_archives', function($types) {
     return array('author', 'date', 'attachment');
 });
@@ -67,6 +71,13 @@ Valid arguments are:
 
 By default, nothing is removed.
 
+### Disable search
+Remove all search-related functionality.
+
+```
+add_theme_support('cl-remove-search');
+```
+
 ### Disable widgets
 
 To clean up some of the less useful default widgets:
@@ -77,6 +88,7 @@ add_filter('cl_remove_widgets', function($widgets) {
 ```
 
 Valid arguments are:
+* 'all' to completely remove the Widgets page from WP Admin;
 * 'misc' to remove Pages, Calendar, Links, Meta, Tag Cloud widgets;
 * 'blog' to remove blog-related widgets: Archives, Categories, Recent Posts, RSS;
 * or an array of specific widget class names - the full list is available in the [Codex](http://codex.wordpress.org/Function_Reference/unregister_widget)
@@ -159,3 +171,10 @@ To reduce database bloat, the number of post revisions is set to 5, unless expli
 ### X-UA-Compatible header
 
 Sets the X-UA-Compatible header to force IE to *not* use compatibility mode. Read more in [this stackoverflow thread](http://stackoverflow.com/questions/6771258/whats-the-difference-if-meta-http-equiv-x-ua-compatible-content-ie-edge-e)
+
+### Disable plugin update checks
+To speed up the load of plugins page, disable plugin update checks. This is useful if you're using a composer-based setup anyway.
+
+```
+add_theme_support('cl-disable-plugin-update-check');
+```
