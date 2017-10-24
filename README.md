@@ -67,6 +67,13 @@ Valid arguments are:
 
 By default, nothing is removed.
 
+### Disable search
+Remove all search-related functionality.
+
+```
+add_theme_support('cl-remove-search')
+```
+
 ### Disable widgets
 
 To clean up some of the less useful default widgets:
