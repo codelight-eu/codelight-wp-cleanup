@@ -165,3 +165,10 @@ To reduce database bloat, the number of post revisions is set to 5, unless expli
 ### X-UA-Compatible header
 
 Sets the X-UA-Compatible header to force IE to *not* use compatibility mode. Read more in [this stackoverflow thread](http://stackoverflow.com/questions/6771258/whats-the-difference-if-meta-http-equiv-x-ua-compatible-content-ie-edge-e)
+
+### Disable plugin update checks
+To speed up the load of plugins page, disable plugin update checks. This is useful if you're using a composer-based setup anyway.
+
+```
+add_theme_support('cl-disable-plugin-update-check');
+```
