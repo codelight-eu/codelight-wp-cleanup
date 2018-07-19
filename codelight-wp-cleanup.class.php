@@ -455,5 +455,12 @@ class Codelight_WP_Cleanup {
         $current_user = wp_get_current_user();
         return in_array('administrator', $current_user->roles);
     }
-
+	
+	public function disable_password_change_admin_email() {
+		if ( ! function_exists( 'wp_password_change_notification' ) ) {
+			function wp_password_change_notification( $user ) {
+				return;
+			}
+		}
+	}
 }
