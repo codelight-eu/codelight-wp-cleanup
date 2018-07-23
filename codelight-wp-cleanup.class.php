@@ -3,28 +3,31 @@
 /*
  * This is just a container class.
  */
-class Codelight_WP_Cleanup {
+
+class Codelight_WP_Cleanup
+{
 
     /**
      * Get rid of the Customizer.
      * Thanks to https://wordpress.org/plugins/customizer-remove-all-parts/
      */
-    public function disable_customizer() {
-        add_action('admin_init', function() {
-            remove_action( 'plugins_loaded', '_wp_customize_include', 10);
-            remove_action( 'admin_enqueue_scripts', '_wp_customize_loader_settings', 11);
-            add_action( 'load-customize.php', function() {
+    public function disable_customizer()
+    {
+        add_action('admin_init', function () {
+            remove_action('plugins_loaded', '_wp_customize_include', 10);
+            remove_action('admin_enqueue_scripts', '_wp_customize_loader_settings', 11);
+            add_action('load-customize.php', function () {
                 wp_die(__('The customizer is disabled.', 'codelight'));
             });
         });
 
-        add_action('init', function() {
-            add_filter('map_meta_cap', function($caps = array(), $cap = '', $user_id = 0, $args = array()) {
+        add_action('init', function () {
+            add_filter('map_meta_cap', function ($caps = [], $cap = '', $user_id = 0, $args = []) {
                 if ($cap == 'customize') {
-                    return array('nope');
+                    return ['nope'];
                 }
                 return $caps;
-            }, 10, 4 );
+            }, 10, 4);
         });
     }
 
@@ -33,8 +36,9 @@ class Codelight_WP_Cleanup {
      *
      * Enable XML-RPC: add_theme_support('cl-xmlrpc');
      */
-    public function disable_xmlrpc() {
-        add_filter('xmlrpc_enabled', function() {
+    public function disable_xmlrpc()
+    {
+        add_filter('xmlrpc_enabled', function () {
             return false;
         });
     }
@@ -46,17 +50,20 @@ class Codelight_WP_Cleanup {
      *
      * Enable: add_theme_support('cl-disable-plugin-update-check');
      */
-    public function disable_plugin_update_check() {
-        add_filter('pre_site_transient_update_core', array($this, 'remove_core_updates'));
-        add_filter('pre_site_transient_update_plugins', array($this, 'remove_core_updates'));
-        add_filter('pre_site_transient_update_themes', array($this, 'remove_core_updates'));
+    public function disable_plugin_update_check()
+    {
+        add_filter('pre_site_transient_update_core', [$this, 'remove_core_updates']);
+        add_filter('pre_site_transient_update_plugins', [$this, 'remove_core_updates']);
+        add_filter('pre_site_transient_update_themes', [$this, 'remove_core_updates']);
     }
-    public function remove_core_updates(){
+
+    public function remove_core_updates()
+    {
         global $wp_version;
-        return (object) array(
-            'last_checked' => time(),
+        return (object)[
+            'last_checked'    => time(),
             'version_checked' => $wp_version,
-        );
+        ];
     }
 
     /*
@@ -67,19 +74,22 @@ class Codelight_WP_Cleanup {
      *
      * Enable: add_theme_support('cl-restricted-dashboard-access');
      */
-    public function restrict_dashboard_access() {
+    public function restrict_dashboard_access()
+    {
         if (!current_user_can('edit_posts')) {
             show_admin_bar(false);
-            add_filter('login_redirect', array($this, 'login_redirect'), 10, 3);
-            add_action('admin_init', array( $this, 'dashboard_redirect' ));
+            add_filter('login_redirect', [$this, 'login_redirect'], 10, 3);
+            add_action('admin_init', [$this, 'dashboard_redirect']);
         }
     }
 
-    public function login_redirect($redirect_to, $request, $user) {
+    public function login_redirect($redirect_to, $request, $user)
+    {
         return home_url();
     }
 
-    public function dashboard_redirect() {
+    public function dashboard_redirect()
+    {
         wp_safe_redirect(home_url());
     }
 
@@ -88,16 +98,18 @@ class Codelight_WP_Cleanup {
      *
      * Disable: add_theme_support('cl-enable-tools')
      */
-    public function remove_tools() {
+    public function remove_tools()
+    {
 
         if ($this->user_is_admin()) {
             return;
         }
 
-        add_action('admin_menu', array($this, 'remove_menu_tools_page'));
+        add_action('admin_menu', [$this, 'remove_menu_tools_page']);
     }
 
-    public function remove_menu_tools_page() {
+    public function remove_menu_tools_page()
+    {
 
         remove_menu_page('tools.php');
     }
@@ -108,28 +120,33 @@ class Codelight_WP_Cleanup {
      *
      * Enable: add_theme_support('cl-remove-comments')
      */
-    public function remove_comments() {
-        add_action( 'init', array($this, 'remove_default_post_types_comment_support'), 100 );
-        add_action( 'wp_before_admin_bar_render', array($this, 'remove_admin_bar_comments') );
-        add_action( 'admin_menu', array($this, 'remove_menu_comments_page') );
-        add_action( 'wp_dashboard_setup', array($this, 'remove_dashboard_comments_widget') );
+    public function remove_comments()
+    {
+        add_action('init', [$this, 'remove_default_post_types_comment_support'], 100);
+        add_action('wp_before_admin_bar_render', [$this, 'remove_admin_bar_comments']);
+        add_action('admin_menu', [$this, 'remove_menu_comments_page']);
+        add_action('wp_dashboard_setup', [$this, 'remove_dashboard_comments_widget']);
     }
 
-    public function remove_menu_comments_page() {
+    public function remove_menu_comments_page()
+    {
         remove_menu_page('edit-comments.php');
     }
 
-    public function remove_default_post_types_comment_support() {
-        remove_post_type_support( 'post', 'comments' );
-        remove_post_type_support( 'page', 'comments' );
+    public function remove_default_post_types_comment_support()
+    {
+        remove_post_type_support('post', 'comments');
+        remove_post_type_support('page', 'comments');
     }
 
-    public function remove_admin_bar_comments() {
+    public function remove_admin_bar_comments()
+    {
         global $wp_admin_bar;
         $wp_admin_bar->remove_menu('comments');
     }
 
-    public function remove_dashboard_comments_widget() {
+    public function remove_dashboard_comments_widget()
+    {
         global $wp_meta_boxes;
         unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_recent_comments']);
     }
@@ -143,7 +160,8 @@ class Codelight_WP_Cleanup {
      *
      * Disable: add_theme_support('cl-disable-admin-cleanup')
      */
-    public function admin_cleanup() {
+    public function admin_cleanup()
+    {
 
         if ($this->user_is_admin()) {
             return;
@@ -151,8 +169,8 @@ class Codelight_WP_Cleanup {
 
         $this->hide_update_notifications();
 
-        add_action( 'admin_menu', array($this, 'remove_menu_pages') );
-        add_action( 'wp_dashboard_setup', array($this, 'remove_dashboard_widgets') );
+        add_action('admin_menu', [$this, 'remove_menu_pages']);
+        add_action('wp_dashboard_setup', [$this, 'remove_dashboard_widgets']);
 
     }
 
@@ -161,7 +179,8 @@ class Codelight_WP_Cleanup {
      *
      * Disable: add_theme_support('cl-disable-admin-cleanup')
      */
-    public function remove_menu_pages() {
+    public function remove_menu_pages()
+    {
         remove_submenu_page('themes.php', 'themes.php');
         remove_submenu_page('themes.php', 'customize.php');
         remove_submenu_page('themes.php', 'custom-header');
@@ -175,7 +194,8 @@ class Codelight_WP_Cleanup {
      *
      * Disable: add_theme_support('cl-disable-admin-cleanup')
      */
-    public function remove_dashboard_widgets() {
+    public function remove_dashboard_widgets()
+    {
         global $wp_meta_boxes;
         unset($wp_meta_boxes['dashboard']['side']['core']['dashboard_quick_press']);
     }
@@ -188,7 +208,8 @@ class Codelight_WP_Cleanup {
      *
      * Modify: add_filter('cl_remove_widgets', array $args)
      */
-    public function remove_widgets($widgets) {
+    public function remove_widgets($widgets)
+    {
 
         foreach ($widgets as $widget) {
 
@@ -205,7 +226,7 @@ class Codelight_WP_Cleanup {
             unregister_widget($widget);
         }
 
-        if ( current_theme_supports('cl-remove-comments') ) {
+        if (current_theme_supports('cl-remove-comments')) {
             unregister_widget('WP_Widget_Recent_Comments');
         }
 
@@ -216,7 +237,8 @@ class Codelight_WP_Cleanup {
      *
      * Disable: add_theme_support('cl-disable-widget-cleanup')
      */
-    public function unregister_blog_widgets() {
+    public function unregister_blog_widgets()
+    {
         unregister_widget('WP_Widget_Archives');
         unregister_widget('WP_Widget_Categories');
         unregister_widget('WP_Widget_Recent_Posts');
@@ -228,7 +250,8 @@ class Codelight_WP_Cleanup {
      *
      * Disable: add_theme_support('cl-disable-widget-cleanup')
      */
-    public function unregister_useless_widgets() {
+    public function unregister_useless_widgets()
+    {
         unregister_widget('WP_Widget_Pages');
         unregister_widget('WP_Widget_Calendar');
         unregister_widget('WP_Widget_Links');
@@ -241,7 +264,8 @@ class Codelight_WP_Cleanup {
      *
      * Disable: add_theme_support('cl-disable-admin-cleanup')
      */
-    public function hide_update_notifications() {
+    public function hide_update_notifications()
+    {
         remove_action('admin_notices', 'update_nag', 3);
     }
 
@@ -251,7 +275,8 @@ class Codelight_WP_Cleanup {
      *
      * Disable: add_theme_support('cl-disable-tinymce-cleanup')
      */
-    public function tinymce_cleanup($formats) {
+    public function tinymce_cleanup($formats)
+    {
         $formats['block_formats'] = 'Paragraph=p;Heading h2=h2;Heading h3=h3;Heading h4=h4';
         return $formats;
     }
@@ -264,7 +289,8 @@ class Codelight_WP_Cleanup {
      *
      * add_filter('wp_headers', array($this, 'add_x_ua_compatible_header'));
      */
-    public function add_x_ua_compatible_header($headers) {
+    public function add_x_ua_compatible_header($headers)
+    {
         $headers['X-UA-Compatible'] = 'IE=edge,chrome=1';
         return $headers;
     }
@@ -275,9 +301,10 @@ class Codelight_WP_Cleanup {
      *
      * Modify: manually set WP_POST_REVISIONS constant
      */
-    public function limit_post_revisions($number = 5) {
+    public function limit_post_revisions($number = 5)
+    {
         if (!defined('WP_POST_REVISIONS')) {
-            add_filter('wp_revisions_to_keep', function() use ($number) {
+            add_filter('wp_revisions_to_keep', function () use ($number) {
                 return $number;
             });
         }
@@ -291,13 +318,15 @@ class Codelight_WP_Cleanup {
      *
      * Enable: add_theme_support('cl-remove-feeds')
      */
-    public function remove_feeds() {
-        if ( ! is_admin() ) {
-            add_action('parse_query', array($this, 'parse_feed_query'));
+    public function remove_feeds()
+    {
+        if (!is_admin()) {
+            add_action('parse_query', [$this, 'parse_feed_query']);
         }
     }
 
-    public function parse_feed_query($obj) {
+    public function parse_feed_query($obj)
+    {
         if ($obj->is_feed() && $obj->is_main_query()) {
             $obj->is_feed = false;
             $obj->set_404();
@@ -310,32 +339,36 @@ class Codelight_WP_Cleanup {
      *
      * Enable: add_theme_support('cl-remove-search')
      */
-    public function remove_search() {
-        add_action('widgets_init', array($this, 'disable_search_widget'), 1);
-        if ( ! is_admin() ) {
-            add_action('parse_query', array($this, 'parse_search_query'), 5);
+    public function remove_search()
+    {
+        add_action('widgets_init', [$this, 'disable_search_widget'], 1);
+        if (!is_admin()) {
+            add_action('parse_query', [$this, 'parse_search_query'], 5);
         }
-        add_filter('get_search_form', array($this, 'get_search_form'), 999);
+        add_filter('get_search_form', [$this, 'get_search_form'], 999);
     }
 
-    public function disable_search_widget() {
-        unregister_widget( 'WP_Widget_Search' );
+    public function disable_search_widget()
+    {
+        unregister_widget('WP_Widget_Search');
     }
 
-    public function parse_search_query($obj) {
+    public function parse_search_query($obj)
+    {
         if ($obj->is_search && $obj->is_main_query()) {
-            unset( $_GET['s'] );
-            unset( $_GET['search'] );
-            unset( $_POST['s'] );
-            unset( $_REQUEST['s'] );
-            unset( $obj->query['s'] );
+            unset($_GET['s']);
+            unset($_GET['search']);
+            unset($_POST['s']);
+            unset($_REQUEST['s']);
+            unset($obj->query['s']);
             $obj->set('s', '');
             $obj->is_search = false;
             $obj->set_404();
         }
     }
 
-    public function get_search_form($form) {
+    public function get_search_form($form)
+    {
         return '';
     }
 
@@ -354,111 +387,136 @@ class Codelight_WP_Cleanup {
      *
      * Enable: add_filter('cl_remove_archives', array $types)
      */
-    public function remove_archive_pages($types = array()) {
+    public function remove_archive_pages($types = [])
+    {
 
         if (empty($types)) {
             return;
         }
 
         if (in_array('archive', $types)) {
-            add_action('parse_query', array($this, 'parse_archive_query'));
+            add_action('parse_query', [$this, 'parse_archive_query']);
 
             // Also unregister tags & categories
-            add_action('init', array($this, 'unregister_category_taxonomy'));
-            add_action('init', array($this, 'unregister_tag_taxonomy'));
+            add_action('init', [$this, 'unregister_category_taxonomy']);
+            add_action('init', [$this, 'unregister_tag_taxonomy']);
         }
 
         if (in_array('category', $types)) {
-            add_action('parse_query', array($this, 'parse_category_query'));
-            add_action('init', array($this, 'unregister_category_taxonomy'));
+            add_action('parse_query', [$this, 'parse_category_query']);
+            add_action('init', [$this, 'unregister_category_taxonomy']);
         }
 
         if (in_array('tag', $types)) {
-            add_action('parse_query', array($this, 'parse_tag_query'));
-            add_action('init', array($this, 'unregister_tag_taxonomy'));
+            add_action('parse_query', [$this, 'parse_tag_query']);
+            add_action('init', [$this, 'unregister_tag_taxonomy']);
         }
 
         if (in_array('author', $types)) {
-            add_action('parse_query', array($this, 'parse_author_query'));
+            add_action('parse_query', [$this, 'parse_author_query']);
         }
 
         if (in_array('date', $types)) {
-            add_action('parse_query', array($this, 'parse_date_query'));
+            add_action('parse_query', [$this, 'parse_date_query']);
         }
 
         if (in_array('attachment', $types)) {
-            add_action('template_redirect', array($this, 'parse_attachment_query'));
+            add_action('template_redirect', [$this, 'parse_attachment_query']);
         }
     }
 
-    public function parse_archive_query($obj) {
+    public function parse_archive_query($obj)
+    {
         if (!is_admin() && $obj->is_archive() && $obj->is_main_query()) {
             $obj->is_archive = false;
             $obj->set_404();
         }
     }
 
-    public function parse_category_query($obj) {
+    public function parse_category_query($obj)
+    {
         if (!is_admin() && $obj->is_category() && $obj->is_main_query()) {
             $obj->is_category = false;
             $obj->set_404();
         }
     }
 
-    public function parse_tag_query($obj) {
+    public function parse_tag_query($obj)
+    {
         if (!is_admin() && $obj->is_tag() && $obj->is_main_query()) {
             $obj->is_tag = false;
             $obj->set_404();
         }
     }
 
-    public function parse_author_query($obj) {
+    public function parse_author_query($obj)
+    {
         if (!is_admin() && $obj->is_author() && $obj->is_main_query()) {
             $obj->is_author = false;
             $obj->set_404();
         }
     }
 
-    public function parse_date_query($obj) {
+    public function parse_date_query($obj)
+    {
         if (!is_admin() && $obj->is_date() && $obj->is_main_query()) {
             $obj->is_date = false;
             $obj->set_404();
         }
     }
 
-    public function parse_attachment_query() {
+    public function parse_attachment_query()
+    {
         if (!is_admin() && is_attachment() && is_main_query()) {
             global $post;
 
-            if ( isset($post->post_parent) && is_numeric($post->post_parent) && ($post->post_parent != 0) ) {
+            if (isset($post->post_parent) && is_numeric($post->post_parent) && ($post->post_parent != 0)) {
                 wp_redirect(get_permalink($post->post_parent), 301);
                 exit;
-            } elseif ( is_attachment() ) {
+            } elseif (is_attachment()) {
                 wp_redirect(get_bloginfo('wpurl'), 302);
                 exit;
             }
         }
     }
 
-    public function unregister_category_taxonomy() {
-        register_taxonomy('category', array());
+    public function unregister_category_taxonomy()
+    {
+        register_taxonomy('category', []);
     }
 
-    public function unregister_tag_taxonomy() {
-        register_taxonomy('post_tag', array());
+    public function unregister_tag_taxonomy()
+    {
+        register_taxonomy('post_tag', []);
     }
 
     /*
      * Check if user has the "Administrator" role.
      */
-    public function user_is_admin() {
+    public function user_is_admin()
+    {
         $current_user = wp_get_current_user();
         return in_array('administrator', $current_user->roles);
     }
-	
-	public function disable_password_change_admin_email() {
-        if ( !function_exists( 'wp_password_change_notification' ) ) {
-            function wp_password_change_notification() {}
+
+    public function disable_password_change_admin_email()
+    {
+        if (!function_exists('wp_password_change_notification')) {
+            function wp_password_change_notification()
+            {
+                return;
+            }
         }
-	}
+    }
+
+    public function disable_user_registered_admin_email()
+    {
+        // DISABLE BOTH default WordPress new user notification emails
+        if (!function_exists('wp_new_user_notification')) {
+            function wp_new_user_notification($user_id, $deprecated = null, $notify = '')
+            {
+                return;
+            }
+        }
+    }
 }
