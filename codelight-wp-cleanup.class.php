@@ -499,7 +499,7 @@ class Codelight_WP_Cleanup
         return in_array('administrator', $current_user->roles);
     }
 
-    public function disable_password_change_admin_email()
+    public function disable_password_changed_admin_email()
     {
         if (!function_exists('wp_password_change_notification')) {
             function wp_password_change_notification()
@@ -511,12 +511,24 @@ class Codelight_WP_Cleanup
 
     public function disable_user_registered_admin_email()
     {
-        // DISABLE BOTH default WordPress new user notification emails
-        if (!function_exists('wp_new_user_notification')) {
-            function wp_new_user_notification($user_id, $deprecated = null, $notify = '')
-            {
-                return;
-            }
+        // based on the plugin "Disable User Registration Notification Emails"
+        add_action('init', function(){
+            // Unhook the actions from wp-includes/default-filters.php
+            remove_action('register_new_user', 'wp_send_new_user_notifications');
+            remove_action('edit_user_created_user', 'wp_send_new_user_notifications', 10);
+
+            // Replace with our action that sends the user email only
+            add_action('register_new_user', [$this, 'send_registered_user_email']);
+            add_action('edit_user_created_user', [$this, 'send_registered_user_email'], 10, 2);
+        });
+    }
+
+    public function send_registered_user_email($userId, $to='both') {
+        if (empty($to) || $to == 'admin') {
+            // Admin only, so we don't do anything
+            return;
         }
+        // For 'both' or 'user', we notify only the user
+        wp_send_new_user_notifications($userId, 'user');
     }
 }

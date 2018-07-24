@@ -87,12 +87,12 @@ function codelight_wp_cleanup_init()
     }
 
     // By default, remove password change emails for admin
-    if (!current_theme_supports('cl-enable-password-change-admin-email')) {
-        $cleanup->disable_password_change_admin_email();
+    if (!current_theme_supports('cl-enable-password-changed-admin-email')) {
+        $cleanup->disable_password_changed_admin_email();
     }
 
     // By default, remove user registration email for admin
-    if (!current_theme_supports('cl-enable-user-registration-admin-email')) {
+    if (!current_theme_supports('cl-enable-user-registered-admin-email')) {
         $cleanup->disable_user_registered_admin_email();
     }
 
