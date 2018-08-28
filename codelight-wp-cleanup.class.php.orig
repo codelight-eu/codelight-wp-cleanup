@@ -498,15 +498,15 @@ class Codelight_WP_Cleanup
         $current_user = wp_get_current_user();
         return in_array('administrator', $current_user->roles);
     }
-
-    public function disable_password_changed_admin_email()
-    {
-        if (!function_exists('wp_password_change_notification')) {
+<<<<<<< HEAD
+	
+	public function disable_password_change_admin_email() {
+        if ( !function_exists( 'wp_password_change_notification' ) ) {
             function wp_password_change_notification($user) {}
         }
 	}
 	
-	/*public function disable_new_user_admin_email() {
+	public function disable_new_user_admin_email() {
 		if ( !function_exists( 'wp_new_user_notification' ) ) {
             function wp_new_user_notification($user_id, $deprecated = null, $notify = '') {
 				if ( $deprecated !== null ) {
@@ -529,6 +529,7 @@ class Codelight_WP_Cleanup
 				// Generate something random for a password reset key.
 				$key = wp_generate_password( 20, false );
 
+				/** This action is documented in wp-login.php */
 				do_action( 'retrieve_password_key', $user->user_login, $key );
 
 				// Now insert the key, hashed, into the DB.
@@ -552,8 +553,18 @@ class Codelight_WP_Cleanup
 					restore_previous_locale();
 				}
 			}
+=======
+
+    public function disable_password_changed_admin_email()
+    {
+        if (!function_exists('wp_password_change_notification')) {
+            function wp_password_change_notification()
+            {
+                return;
+            }
+>>>>>>> de528bdb7d69473de1cb5ddfe65d8fc47f47e12b
         }
-    }*/
+    }
 
     public function disable_user_registered_admin_email()
     {
