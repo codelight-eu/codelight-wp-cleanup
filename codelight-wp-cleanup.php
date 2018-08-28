@@ -90,6 +90,11 @@ function codelight_wp_cleanup_init() {
         $cleanup->disable_password_change_admin_email();
     }
 
+	// By default, remove password change emails for admin
+    if ( !current_theme_supports('cl-enable-new-user-admin-email') ) {
+        $cleanup->disable_new_user_admin_email();
+    }
+
     // Disable specific archive page types
     $cleanup->remove_archive_pages( apply_filters('cl_remove_archives', array()) );
 
