@@ -8,14 +8,15 @@
  Author URI: http://codelight.eu
  */
 
-if ( ! defined( 'WPINC' ) ) {
+if (!defined('WPINC')) {
     die;
 }
 
-function codelight_wp_cleanup_init() {
+function codelight_wp_cleanup_init()
+{
 
     // If the support for this plugin is not specifically enabled in the active theme, do nothing
-    if ( !current_theme_supports('cl-wp-cleanup') ) {
+    if (!current_theme_supports('cl-wp-cleanup')) {
         return;
     }
 
@@ -23,71 +24,76 @@ function codelight_wp_cleanup_init() {
     $cleanup = new Codelight_WP_Cleanup();
 
     // Disable customizer
-    if ( current_theme_supports('cl-disable-customizer')) {
+    if (current_theme_supports('cl-disable-customizer')) {
         $cleanup->disable_customizer();
     }
 
     // Disable update checks for plugins, core and themes
-    if ( current_theme_supports('cl-disable-plugin-update-check')) {
+    if (current_theme_supports('cl-disable-plugin-update-check')) {
         $cleanup->disable_plugin_update_check();
     }
 
     // By default, turn off XML-RPC
-    if ( !current_theme_supports('cl-enable-xmlrpc') ) {
-        add_filter('xmlrpc_enabled', function() {
+    if (!current_theme_supports('cl-enable-xmlrpc')) {
+        add_filter('xmlrpc_enabled', function () {
             return false;
         });
     }
 
     // Disable admin bar and dashboard access to users without 'edit_posts' capability
-    if ( current_theme_supports('cl-restricted-dashboard-access') ) {
+    if (current_theme_supports('cl-restricted-dashboard-access')) {
         $cleanup->restrict_dashboard_access();
     }
 
     // By default, remove Tools from non-admin user menus
-    if ( !current_theme_supports('cl-enable-tools') ) {
+    if (!current_theme_supports('cl-enable-tools')) {
         $cleanup->remove_tools();
     }
 
     // Remove Comments from non-admin user menus and admin bar, remove comments from post & page types
-    if ( current_theme_supports('cl-remove-comments') ) {
+    if (current_theme_supports('cl-remove-comments')) {
         $cleanup->remove_comments();
     }
 
     // By default, remove update notifications, hide some links from Appearance menu and clean up dashboard
-    if ( !current_theme_supports('cl-disable-admin-cleanup') ) {
+    if (!current_theme_supports('cl-disable-admin-cleanup')) {
         $cleanup->admin_cleanup();
     }
 
     // Disable all feeds
     // ! Make sure to remove the Feed link from header
-    if ( current_theme_supports('cl-remove-feeds') ) {
+    if (current_theme_supports('cl-remove-feeds')) {
         $cleanup->remove_feeds();
     }
 
     // Disable search and all related functionality
-    if ( current_theme_supports('cl-remove-search') ) {
+    if (current_theme_supports('cl-remove-search')) {
         $cleanup->remove_search();
     }
 
     // Clean up less useful stuff from tinymce editor
-    if ( !current_theme_supports('cl-disable-tinymce-cleanup') ) {
-        add_filter('tiny_mce_before_init', array($cleanup, 'tinymce_cleanup'));
+    if (!current_theme_supports('cl-disable-tinymce-cleanup')) {
+        add_filter('tiny_mce_before_init', [$cleanup, 'tinymce_cleanup']);
     }
 
-    if (in_array('all', apply_filters('cl_remove_widgets', array('misc')))) {
+    if (in_array('all', apply_filters('cl_remove_widgets', ['misc']))) {
         // Disable all widgets
-        remove_action( '_admin_menu', 'wp_widgets_add_menu' );
+        remove_action('_admin_menu', 'wp_widgets_add_menu');
     } else {
         // Clean up un-used widgets; misc ~useless widgets are removed by default
-        add_action('widgets_init', function() use ($cleanup) {
-            $cleanup->remove_widgets( apply_filters('cl_remove_widgets', array('misc')) );
+        add_action('widgets_init', function () use ($cleanup) {
+            $cleanup->remove_widgets(apply_filters('cl_remove_widgets', ['misc']));
         });
     }
-	
-	// By default, remove password change emails for admin
-    if ( !current_theme_supports('cl-enable-password-change-admin-email') ) {
-        $cleanup->disable_password_change_admin_email();
+
+    // By default, remove password change emails for admin
+    if (!current_theme_supports('cl-enable-password-changed-admin-email')) {
+        $cleanup->disable_password_changed_admin_email();
+    }
+
+    // By default, remove user registration email for admin
+    if (!current_theme_supports('cl-enable-user-registered-admin-email')) {
+        $cleanup->disable_user_registered_admin_email();
     }
 
 	// By default, remove password change emails for admin
@@ -96,12 +102,13 @@ function codelight_wp_cleanup_init() {
     }
 
     // Disable specific archive page types
-    $cleanup->remove_archive_pages( apply_filters('cl_remove_archives', array()) );
+    $cleanup->remove_archive_pages(apply_filters('cl_remove_archives', []));
 
     // By default, add X-UA-Compatible header
-    add_filter('wp_headers', array($cleanup, 'add_x_ua_compatible_header'));
+    add_filter('wp_headers', [$cleanup, 'add_x_ua_compatible_header']);
 
     // By default, if not specifically set to another number, limit post revisions to 5
     $cleanup->limit_post_revisions();
 }
+
 add_action('after_setup_theme', 'codelight_wp_cleanup_init', 1000);
