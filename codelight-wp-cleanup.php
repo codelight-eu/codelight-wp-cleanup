@@ -12,16 +12,16 @@ if (!defined('WPINC')) {
     die;
 }
 
+require_once('codelight-wp-cleanup.class.php');
+
 function codelight_wp_cleanup_init()
 {
+    $cleanup = new Codelight_WP_Cleanup();
 
     // If the support for this plugin is not specifically enabled in the active theme, do nothing
     if (!current_theme_supports('cl-wp-cleanup')) {
         return;
     }
-
-    require_once('codelight-wp-cleanup.class.php');
-    $cleanup = new Codelight_WP_Cleanup();
 
     // Disable customizer
     if (current_theme_supports('cl-disable-customizer')) {
@@ -86,21 +86,6 @@ function codelight_wp_cleanup_init()
         });
     }
 
-    // By default, remove password change emails for admin
-    if (!current_theme_supports('cl-enable-password-changed-admin-email')) {
-        $cleanup->disable_password_changed_admin_email();
-    }
-
-    // By default, remove user registration email for admin
-    if (!current_theme_supports('cl-enable-user-registered-admin-email')) {
-        $cleanup->disable_user_registered_admin_email();
-    }
-
-	// By default, remove password change emails for admin
-    /*if ( !current_theme_supports('cl-enable-new-user-admin-email') ) {
-        $cleanup->disable_new_user_admin_email();
-    }*/
-
     // Disable specific archive page types
     $cleanup->remove_archive_pages(apply_filters('cl_remove_archives', []));
 
@@ -111,4 +96,28 @@ function codelight_wp_cleanup_init()
     $cleanup->limit_post_revisions();
 }
 
+/**
+ *  These supports have to be defined before any actions.
+ */
+function codelight_wp_cleanup_pluggable()
+{
+    $cleanup = new Codelight_WP_Cleanup();
+
+    // By default, remove password change emails for admin
+    if (!current_theme_supports('cl-enable-password-changed-admin-email')) {
+        $cleanup->disable_password_changed_admin_email();
+    }
+
+    // By default, remove password change emails for admin
+    /*if (!current_theme_supports('cl-enable-new-user-admin-email')) {
+        $cleanup->disable_new_user_admin_email();
+    }*/
+
+    // By default, remove user registration email for admin
+    if (!current_theme_supports('cl-enable-user-registered-admin-email')) {
+        $cleanup->disable_user_registered_admin_email();
+    }
+}
+
 add_action('after_setup_theme', 'codelight_wp_cleanup_init', 1000);
+codelight_wp_cleanup_pluggable();

@@ -502,63 +502,65 @@ class Codelight_WP_Cleanup
     public function disable_password_changed_admin_email()
     {
         if (!function_exists('wp_password_change_notification')) {
-            function wp_password_change_notification($user) {}
+            function wp_password_change_notification($user)
+            {
+            }
         }
-	}
-	
-	/*public function disable_new_user_admin_email() {
-		if ( !function_exists( 'wp_new_user_notification' ) ) {
+    }
+
+    /*public function disable_new_user_admin_email() {
+        if ( !function_exists( 'wp_new_user_notification' ) ) {
             function wp_new_user_notification($user_id, $deprecated = null, $notify = '') {
-				if ( $deprecated !== null ) {
-					_deprecated_argument( __FUNCTION__, '4.3.1' );
-				}
-				
-				global $wpdb;
-				$user = get_userdata( $user_id );
+                if ( $deprecated !== null ) {
+                    _deprecated_argument( __FUNCTION__, '4.3.1' );
+                }
 
-				// `$deprecated was pre-4.3 `$plaintext_pass`. An empty `$plaintext_pass` didn't sent a user notification.
-				if ( 'admin' === $notify || ( empty( $deprecated ) && empty( $notify ) ) ) {
-					return;
-				}
+                global $wpdb;
+                $user = get_userdata( $user_id );
 
-				// The blogname option is escaped with esc_html on the way into the database in sanitize_option
-				// we want to reverse this for the plain text arena of emails.
-				$blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES);
-				
-				
-				// Generate something random for a password reset key.
-				$key = wp_generate_password( 20, false );
+                // `$deprecated was pre-4.3 `$plaintext_pass`. An empty `$plaintext_pass` didn't sent a user notification.
+                if ( 'admin' === $notify || ( empty( $deprecated ) && empty( $notify ) ) ) {
+                    return;
+                }
 
-				do_action( 'retrieve_password_key', $user->user_login, $key );
+                // The blogname option is escaped with esc_html on the way into the database in sanitize_option
+                // we want to reverse this for the plain text arena of emails.
+                $blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES);
 
-				// Now insert the key, hashed, into the DB.
-				if ( empty( $wp_hasher ) ) {
-					$wp_hasher = new PasswordHash( 8, true );
-				}
-				$hashed = time() . ':' . $wp_hasher->HashPassword( $key );
-				$wpdb->update( $wpdb->users, array( 'user_activation_key' => $hashed ), array( 'user_login' => $user->user_login ) );
 
-				$switched_locale = switch_to_locale( get_user_locale( $user ) );
+                // Generate something random for a password reset key.
+                $key = wp_generate_password( 20, false );
 
-				$message = sprintf(__('Username: %s'), $user->user_login) . "\r\n\r\n";
-				$message .= __('To set your password, visit the following address:') . "\r\n\r\n";
-				$message .= '<' . network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user->user_login), 'login') . ">\r\n\r\n";
+                do_action( 'retrieve_password_key', $user->user_login, $key );
 
-				$message .= wp_login_url() . "\r\n";
+                // Now insert the key, hashed, into the DB.
+                if ( empty( $wp_hasher ) ) {
+                    $wp_hasher = new PasswordHash( 8, true );
+                }
+                $hashed = time() . ':' . $wp_hasher->HashPassword( $key );
+                $wpdb->update( $wpdb->users, array( 'user_activation_key' => $hashed ), array( 'user_login' => $user->user_login ) );
 
-				wp_mail($user->user_email, sprintf(__('[%s] Your username and password info'), $blogname), $message);
+                $switched_locale = switch_to_locale( get_user_locale( $user ) );
 
-				if ( $switched_locale ) {
-					restore_previous_locale();
-				}
-			}
+                $message = sprintf(__('Username: %s'), $user->user_login) . "\r\n\r\n";
+                $message .= __('To set your password, visit the following address:') . "\r\n\r\n";
+                $message .= '<' . network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user->user_login), 'login') . ">\r\n\r\n";
+
+                $message .= wp_login_url() . "\r\n";
+
+                wp_mail($user->user_email, sprintf(__('[%s] Your username and password info'), $blogname), $message);
+
+                if ( $switched_locale ) {
+                    restore_previous_locale();
+                }
+            }
         }
     }*/
 
     public function disable_user_registered_admin_email()
     {
         // based on the plugin "Disable User Registration Notification Emails"
-        add_action('init', function(){
+        add_action('init', function () {
             // Unhook the actions from wp-includes/default-filters.php
             remove_action('register_new_user', 'wp_send_new_user_notifications');
             remove_action('edit_user_created_user', 'wp_send_new_user_notifications', 10);
@@ -569,7 +571,8 @@ class Codelight_WP_Cleanup
         });
     }
 
-    public function send_registered_user_email($userId, $to='both') {
+    public function send_registered_user_email($userId, $to = 'both')
+    {
         if (empty($to) || $to == 'admin') {
             // Admin only, so we don't do anything
             return;
