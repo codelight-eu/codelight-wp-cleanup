@@ -3,7 +3,6 @@
   "description": "Remove various unneeded functionality from your WP installation.",
   "keywords": ["wordpress", "plugin"],
   "homepage": "http://codelight.eu",
-  "license": "The Unlicense",
   "authors": [
     {
       "name": "Indrek Konnussaar",
